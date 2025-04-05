@@ -4,3 +4,4 @@ numpy
 matplotlib
 scikit-survival==0.21.0
 requests
+joblib
