@@ -6,20 +6,39 @@ import matplotlib.pyplot as plt
 import os
 import gdown
 
-# 🔽 1. Download model from Google Drive
-FILE_ID = "11VcGyoB4zrHoWUl3QeWhf5fGJpYIiyoT"
+# ID del archivo en Google Drive
+FILE_ID = "11VcGyoB4zrHoWUl3QeWhf5fGJpYIiyoT"  # Sustituye por tu ID real si cambia
 URL = f"https://drive.google.com/uc?id={FILE_ID}"
 
 @st.cache_resource
 def load_model():
     if not os.path.exists("rsf_model.pkl"):
-        with st.spinner("Downloading model from Google Drive..."):
+        with st.spinner("⬇️ Downloading model from Google Drive..."):
             gdown.download(URL, "rsf_model.pkl", quiet=False)
-    with open("rsf_model.pkl", "rb") as f:
-        return pickle.load(f)
 
+    try:
+        with open("rsf_model.pkl", "rb") as f:
+            model = pickle.load(f)
+    except Exception as e:
+        st.error(f"❌ Failed to load model: {e}")
+        st.stop()
+
+    # Verificar atributos necesarios
+    missing_attrs = []
+    for attr in ["estimators_", "n_features_in_", "n_outputs_"]:
+        if not hasattr(model, attr):
+            missing_attrs.append(attr)
+
+    if missing_attrs:
+        st.error(f"❌ The model is missing essential attributes: {missing_attrs}")
+        st.stop()
+
+    st.success("✅ Model loaded successfully.")
+    return model
+
+# Cargar modelo
 rsf = load_model()
-time_horizon = 5  # years
+time_horizon = 5  # Años
 
 st.title("5-Year Cardiovascular Event Risk Prediction in People Living with HIV")
 st.write("Please enter the patient's clinical and demographic information:")
@@ -70,9 +89,9 @@ df_input = pd.DataFrame({
     "Diabetes": [1 if diabetes == "Yes" else 0]
 })
 
+# Predicción
 surv_fn = rsf.predict_survival_function(df_input)[0]
 times = rsf.event_times_
-
 surv_5y = float(surv_fn(time_horizon))
 risk_5y = 1 - surv_5y
 
