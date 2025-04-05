@@ -6,12 +6,12 @@ import matplotlib.pyplot as plt
 import pickle
 import os
 import requests
+import joblib
 
-# Descargar el modelo desde Hugging Face Hub
 @st.cache_resource
 def load_model():
-    url = "https://huggingface.co/ebmorell/cvd-risk-model/resolve/main/rsf_model.pkl"
-    local_path = "rsf_model.pkl"
+    url = "https://huggingface.co/ebmorell/cvd-risk-model/resolve/main/rsf_model.joblib"
+    local_path = "rsf_model.joblib"
 
     if not os.path.exists(local_path):
         with st.spinner("⬇️ Downloading model from Hugging Face..."):
@@ -20,9 +20,7 @@ def load_model():
                 for chunk in response.iter_content(chunk_size=8192):
                     f.write(chunk)
 
-    with open(local_path, "rb") as f:
-        model = pickle.load(f)
-
+    model = joblib.load(local_path)
     return model
 
 # Cargar el modelo completo
