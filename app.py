@@ -1,12 +1,10 @@
-
 import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import pickle
+import joblib
 import os
 import requests
-import joblib
 
 @st.cache_resource
 def load_model():
@@ -23,7 +21,7 @@ def load_model():
     model = joblib.load(local_path)
     return model
 
-# Cargar el modelo completo
+# Load model
 rsf = load_model()
 time_horizon = 5
 
@@ -76,7 +74,7 @@ df_input = pd.DataFrame({
     "Diabetes": [1 if diabetes == "Yes" else 0]
 })
 
-# Predicción
+# Predict
 surv_fn = rsf.predict_survival_function(df_input)[0]
 times = surv_fn.x
 probs = surv_fn(times)
@@ -92,4 +90,3 @@ ax.set_title("Predicted survival curve")
 ax.set_xlabel("Time (years)")
 ax.set_ylabel("Survival probability")
 st.pyplot(fig)
-
