@@ -1,44 +1,28 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import pickle
 import matplotlib.pyplot as plt
+import pickle
 import os
 import gdown
 
-# ID del archivo en Google Drive
-FILE_ID = "11VcGyoB4zrHoWUl3QeWhf5fGJpYIiyoT"  # Sustituye por tu ID real si cambia
+# ID del archivo grande en Google Drive
+FILE_ID = "15XGLONAtDIlTtDiCOW9JeWlU9pTBz3HG"  # Sustituye por el ID del modelo de 3 GB
 URL = f"https://drive.google.com/uc?id={FILE_ID}"
 
 @st.cache_resource
 def load_model():
     if not os.path.exists("rsf_model.pkl"):
-        with st.spinner("⬇️ Downloading model from Google Drive..."):
+        with st.spinner("⬇️ Downloading full model from Google Drive (~3GB)..."):
             gdown.download(URL, "rsf_model.pkl", quiet=False)
 
-    try:
-        with open("rsf_model.pkl", "rb") as f:
-            model = pickle.load(f)
-    except Exception as e:
-        st.error(f"❌ Failed to load model: {e}")
-        st.stop()
-
-    # Verificar atributos necesarios
-    missing_attrs = []
-    for attr in ["estimators_", "n_features_in_", "n_outputs_"]:
-        if not hasattr(model, attr):
-            missing_attrs.append(attr)
-
-    if missing_attrs:
-        st.error(f"❌ The model is missing essential attributes: {missing_attrs}")
-        st.stop()
-
-    st.success("✅ Model loaded successfully.")
+    with open("rsf_model.pkl", "rb") as f:
+        model = pickle.load(f)
     return model
 
-# Cargar modelo
+# Cargar el modelo completo
 rsf = load_model()
-time_horizon = 5  # Años
+time_horizon = 5
 
 st.title("5-Year Cardiovascular Event Risk Prediction in People Living with HIV")
 st.write("Please enter the patient's clinical and demographic information:")
@@ -89,16 +73,17 @@ df_input = pd.DataFrame({
     "Diabetes": [1 if diabetes == "Yes" else 0]
 })
 
-# Predicción
 surv_fn = rsf.predict_survival_function(df_input)[0]
-times = rsf.event_times_
+times = surv_fn.x
+probs = surv_fn(times)
+
 surv_5y = float(surv_fn(time_horizon))
 risk_5y = 1 - surv_5y
 
 st.markdown(f"### Estimated 5-year cardiovascular event risk: **{risk_5y:.1%}**")
 
 fig, ax = plt.subplots()
-ax.step(times, surv_fn(times), where="post")
+ax.step(times, probs, where="post")
 ax.set_title("Predicted survival curve")
 ax.set_xlabel("Time (years)")
 ax.set_ylabel("Survival probability")
