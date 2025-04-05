@@ -1,13 +1,51 @@
+# Cardiovascular Risk Prediction App for People Living with HIV
 
-# 5-Year Cardiovascular Risk Predictor in People Living with HIV
+This Streamlit web application estimates the 5-year risk of cardiovascular events in people living with HIV using a machine learning model based on Random Survival Forests.
 
-This app estimates the 5-year cardiovascular risk in people living with HIV using a Random Survival Forest model trained on clinical and demographic data from the CoRIS cohort.
+## 🚀 Features
+- Predicts 5-year cardiovascular risk from clinical and demographic data
+- Based on a trained Random Survival Forest model
+- Uses a large clinical cohort (CoRIS)
+- Visualizes predicted survival curve
 
-🧠 **Model:** Random Survival Forest  
-📊 **Data source:** CoRIS (HIV Research Network in Spain)  
-👨‍⚕️ **Author:** Dr. Enrique Bernal Morell  
-🚀 **Built with:** Streamlit + scikit-survival + Python
+## 📦 Model Info
+- Trained with over 20 variables
+- Hosted on [Hugging Face Hub](https://huggingface.co/ebmorell/cvd-risk-model)
+- Automatically downloaded when the app starts (no manual download needed)
 
-To use this app, deploy it via [Streamlit Cloud](https://streamlit.io/cloud) or run it locally with:
+## 🧪 Input Variables
+- Sex
+- Mode of transmission
+- Country of origin
+- Education level
+- AIDS diagnosis
+- Age
+- Baseline viral load
+- ART regimen
+- HCV / HBV serologies
+- CD4 / CD8 counts and ratio
+- Blood pressure
+- Smoking
+- Cholesterol, HDL, triglycerides, etc.
+- Diabetes
 
-    streamlit run app.py
+## 🖥️ How to Run
+
+### Option 1: Streamlit Cloud
+1. Fork this repository
+2. Deploy via [Streamlit Cloud](https://streamlit.io/cloud)
+
+### Option 2: Local
+```bash
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+## 📁 Files
+- `app.py` → Main Streamlit application
+- `requirements.txt` → Dependencies
+
+## 🤝 Author
+**Enrique Bernal Morell**  
+Internal Medicine & Infectious Diseases  
+Project hosted on [Hugging Face](https://huggingface.co/ebmorell/cvd-risk-model)
