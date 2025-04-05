@@ -7,7 +7,7 @@ import os
 import gdown
 
 # 🔽 1. Download model from Google Drive
-FILE_ID = "1J9ZZDWuE8k_r_KH4qu-ETh2LN_G53MKP"
+FILE_ID = "11VcGyoB4zrHoWUl3QeWhf5fGJpYIiyoT"
 URL = f"https://drive.google.com/uc?id={FILE_ID}"
 
 @st.cache_resource
