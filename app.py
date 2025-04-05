@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -8,7 +7,7 @@ import os
 import gdown
 
 # 🔽 1. Download model from Google Drive
-FILE_ID = "1as_h3i3hM7G7ArgL5Pf3Fk2RU4g6lr45"
+FILE_ID = "1RU97PU9rvE5dlr0bfU0u-zjuOFvdNth7"
 URL = f"https://drive.google.com/uc?id={FILE_ID}"
 
 @st.cache_resource
