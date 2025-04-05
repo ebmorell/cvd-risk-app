@@ -1,23 +1,28 @@
+
 import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle
 import os
-import gdown
+import requests
 
-# ID del archivo grande en Google Drive
-FILE_ID = "15XGLONAtDIlTtDiCOW9JeWlU9pTBz3HG"  # Sustituye por el ID del modelo de 3 GB
-URL = f"https://drive.google.com/uc?id={FILE_ID}"
-
+# Descargar el modelo desde Hugging Face Hub
 @st.cache_resource
 def load_model():
-    if not os.path.exists("rsf_model.pkl"):
-        with st.spinner("⬇️ Downloading full model from Google Drive (~3GB)..."):
-            gdown.download(URL, "rsf_model.pkl", quiet=False)
+    url = "https://huggingface.co/ebmorell/cvd-risk-model/resolve/main/rsf_model.pkl"
+    local_path = "rsf_model.pkl"
 
-    with open("rsf_model.pkl", "rb") as f:
+    if not os.path.exists(local_path):
+        with st.spinner("⬇️ Downloading model from Hugging Face..."):
+            response = requests.get(url, stream=True)
+            with open(local_path, "wb") as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    f.write(chunk)
+
+    with open(local_path, "rb") as f:
         model = pickle.load(f)
+
     return model
 
 # Cargar el modelo completo
@@ -73,6 +78,7 @@ df_input = pd.DataFrame({
     "Diabetes": [1 if diabetes == "Yes" else 0]
 })
 
+# Predicción
 surv_fn = rsf.predict_survival_function(df_input)[0]
 times = surv_fn.x
 probs = surv_fn(times)
@@ -88,3 +94,4 @@ ax.set_title("Predicted survival curve")
 ax.set_xlabel("Time (years)")
 ax.set_ylabel("Survival probability")
 st.pyplot(fig)
+
